@@ -66,10 +66,21 @@ export async function createWalk(container, { onProgress, onInteract, onPose } =
   scene.add(new THREE.HemisphereLight('#c9b8c8', '#4a4036', .25));
 
   let done = 0; const tick = () => { done++; onProgress && onProgress(done / 3); };
+  // Hosts that cannot serve .glb/.hdr can define window.__EMBEDDED = { model: <base64>, env: <base64> } before this module runs.
+  const EMB = globalThis.__EMBEDDED || null;
+  const fromB64 = str => { const bin = atob(str); const u = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return u.buffer; };
+  const loadModel = () => EMB && EMB.model
+    ? new Promise((res, rej) => new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).parse(fromB64(EMB.model), './', res, rej))
+    : new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).loadAsync(ASSETS.model);
+  const loadEnv = async () => {
+    if (!(EMB && EMB.env)) return new RGBELoader().loadAsync(ASSETS.env);
+    const d = new RGBELoader().parse(fromB64(EMB.env));
+    const t = new THREE.DataTexture(d.data, d.width, d.height, THREE.RGBAFormat, d.type); t.colorSpace = THREE.LinearSRGBColorSpace; t.minFilter = t.magFilter = THREE.LinearFilter; t.generateMipmaps = false; t.flipY = true; t.needsUpdate = true; return t;
+  };
   const [gltf, lightmap, envTex] = await Promise.all([
-    new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).loadAsync(ASSETS.model).then(g => (tick(), g)),
+    loadModel().then(g => (tick(), g)),
     new THREE.TextureLoader().loadAsync(ASSETS.lightmap).then(t => (tick(), t)),
-    new RGBELoader().loadAsync(ASSETS.env).then(t => (tick(), t)),
+    loadEnv().then(t => (tick(), t)),
   ]);
   envTex.mapping = THREE.EquirectangularReflectionMapping;
   const pmrem = new THREE.PMREMGenerator(renderer); scene.environment = pmrem.fromEquirectangular(envTex).texture; scene.environmentIntensity = .75; envTex.dispose(); pmrem.dispose();
