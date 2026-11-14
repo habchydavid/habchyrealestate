@@ -20,7 +20,7 @@ export function planSVG({ apts = ['A', 'B', 'C', 'core'], fit = 'all', labels = 
     s += `<g class="apt apt-${apt}" data-apt="${apt}" style="--tone:${tone}"${interactive && apt !== 'core' ? ' tabindex="0" role="button"' : ''}>`;
     for (const r of rs) {
       const [x0, y0, x1, y1] = r.rect;
-      s += `<rect class="floor ${r.type}" x="${x0}" y="${y0}" width="${x1 - x0}" height="${y1 - y0}"/>`;
+      s += `<rect class="floor ${r.type}" data-room="${r.id}" x="${x0}" y="${y0}" width="${x1 - x0}" height="${y1 - y0}"/>`;
       if (r.type === 'balcony') s += `<rect class="hatch" x="${x0}" y="${y0}" width="${x1 - x0}" height="${y1 - y0}" fill="url(#hatch)"/>`;
     }
     if (furniture) for (const r of rs) s += fixtures(r);
@@ -170,6 +170,8 @@ export const PLAN_CSS = `
 .plan .entry circle { fill: var(--brass); } .plan .entry text { fill: #16130e; font-size: 20px; font-weight: 700; }
 .plan.mini .lbl, .plan.mini .entry, .plan.mini .letter { display: none; }
 .plan.mini .fx { opacity: .35; }
+.plan .floor.now { fill: var(--peach); fill-opacity: .55; }
+.plan.mini .floor { fill-opacity: .10; } .plan.mini .floor.now { fill-opacity: .6; }
 .plan.thumb .lbl .dim, .plan.thumb .entry { display: none; }
 .plan.thumb .lbl text { font-size: 40px; }
 `;
