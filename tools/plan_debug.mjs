@@ -1,4 +1,4 @@
-import * as P from '../site/plan.js';
+import * as P from '../plan.js';
 import fs from 'fs';
 const walls = P.solveWalls();
 const col = { exterior:'#222', party:'#444', interior:'#666', glass:'#2aa', window:'#28c', railing:'#c84', door:'#e22' };

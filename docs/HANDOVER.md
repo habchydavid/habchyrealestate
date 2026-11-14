@@ -7,12 +7,12 @@ touches a floor / apartment on the facade and enters that apartment's tour.
 ## Decisions taken so far
 
 1. **The quality gap between the AI film and any real-time 3D is handled by not comparing them in one frame.**
-   The film ends on a still we control (`site/poster.jpg`, the film's exact last frame), the hotspots sit on that still,
+   The film ends on a still we control (`poster.jpg`, the film's exact last frame), the hotspots sit on that still,
    and the click zooms into the facade and fades to black before the tour appears. Apartment visuals are generated with
    the same kind of model as the film (Higgsfield / GPT Image 2.6) instead of being modelled by hand.
 2. **Navigation follows the real plan.** Each typical floor has three apartments (A, B, C) around a stair core.
-   `site/plan.js` holds the plan traced from the architect's drawing (`references/floorplan-typical.jpg`), in centimetres,
-   one rectangle per room, with doors. `site/plansvg.js` renders it as a vector plan. `tools/plan_debug.mjs` renders a
+   `plan.js` holds the plan traced from the architect's drawing (`references/floorplan-typical.jpg`), in centimetres,
+   one rectangle per room, with doors. `plansvg.js` renders it as a vector plan. `tools/plan_debug.mjs` renders a
    check image (`references/plan-trace-check.png`).
 3. **Facade hotspots** are polygons in the film's 1280x720 frame (`references/facade-hotspot-check.jpg` shows them).
    Floors on the facade: floor 1 (y 345-455 at the building corner), floor 2 (245-345), floor 3 (135-245), penthouse above.
@@ -21,13 +21,19 @@ touches a floor / apartment on the facade and enters that apartment's tour.
    (2.75 credits, GPT Image 2.6, quality high, size 2048x1024, references: floor plan + building frame). Walls bow slightly
    and the nadir is warped, so the viewer must clamp pitch to roughly -30°..+25° and use a ~65° field of view.
 
+## Live
+
+GitHub Pages serves the root of `main` at https://habchydavid.github.io/habchyrealestate/ . The generated rooms are
+in `img/` (web-sized) and `renders/` (originals). The tour is a 360° viewer with clamped pitch; free walking needs a
+3D model (architect's export, or geometry generated from `plan.js`).
+
 ## State of the files
 
-- `site/index.html` — working hero (film → still → hotspots → zoom transition), sections and the first tour wiring.
+- `index.html` — working hero (film → still → hotspots → zoom transition), sections and the first tour wiring.
   Its hotspots are still the earlier West/East-per-floor model; they need to become floor bands → plan stage → apartment.
-- `site/tour.js` — the placeholder procedural three.js apartment. To be replaced by a panorama viewer + stills.
-- `site/plan.js`, `site/plansvg.js` — plan data and vector renderer, ready. Not yet wired into `index.html`.
-- `tools/walkthrough.js` — Playwright walkthrough with screenshots (expects a static server on 127.0.0.1:8765 serving `site/`
+- `tour.js` — the placeholder procedural three.js apartment. To be replaced by a panorama viewer + stills.
+- `plan.js`, `plansvg.js` — plan data and vector renderer, ready. Not yet wired into `index.html`.
+- `tools/walkthrough.js` — Playwright walkthrough with screenshots (expects a static server on 127.0.0.1:8765 serving ``
   with three.js vendored at `vendor/three/` when the CDN is unreachable).
 - `tools/pano.html`, `tools/pano_check.js` — minimal three.js sphere viewer used to verify panoramas.
 
