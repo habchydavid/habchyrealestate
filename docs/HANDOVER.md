@@ -27,6 +27,19 @@ GitHub Pages serves the root of `main` at https://habchydavid.github.io/habchyre
 in `img/` (web-sized) and `renders/` (originals). The tour is a 360° viewer with clamped pitch; free walking needs a
 3D model (architect's export, or geometry generated from `plan.js`).
 
+## Free walk (walk.js)
+
+`residence-floor.glb` + `lightmap.webp` + `env_dusk_1k.hdr` came from the client as a "residence viewer" bundle
+(its original orbit viewer source is kept in `references/residence-viewer/`). `walk.js` loads them with three r169
+(GLTFLoader + MeshoptDecoder + RGBELoader), applies the baked lightmap exactly as the bundle's README says, adds a
+ceiling (the model is a cut-away), a sky and a simple neighbourhood outside the glazing, and runs a first-person walk:
+WASD / arrows, drag to look, tap the floor to walk there, a left-thumb joystick on touch, raycast collisions against
+walls, joinery, glazing, railings and furniture, and floor-following via a downward ray. Jump points live in
+`PLACES` in `index.html` (model metres; x east, z south, origin at the core).
+
+**Known mismatch:** this GLB is a generic four-apartment floor, not The Unique's three-apartment plan. The walk code
+is model-agnostic; when a GLB that follows `plan.js` arrives, replace the three asset files and re-place `PLACES`.
+
 ## State of the files
 
 - `index.html` — working hero (film → still → hotspots → zoom transition), sections and the first tour wiring.

@@ -84,7 +84,7 @@ img { max-width: 100%; }
 .chip { display: inline-flex; align-items: center; gap: 8px; height: 38px; padding: 0 16px; border-radius: 999px; border: 1px solid rgba(236,228,212,.28); background: rgba(16,15,13,.45); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); font: 600 12px/1 var(--body); letter-spacing: .12em; text-transform: uppercase; color: var(--fg); transition: background .25s, border-color .25s, opacity .4s; }
 .chip:hover { background: rgba(236,228,212,.12); border-color: rgba(236,228,212,.5); }
 .chip svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
-.hero-title { position: absolute; left: var(--gutter-l); right: var(--gutter-r); bottom: 168px; text-shadow: 0 2px 24px rgba(0,0,0,.45); display: grid; gap: 12px; max-width: 640px; opacity: 0; transform: translateY(14px); transition: opacity 1s var(--ease-out) .35s, transform 1s var(--ease-out) .35s; }
+.hero-title { position: absolute; left: var(--gutter-l); right: var(--gutter-r); bottom: 168px; pointer-events: none; text-shadow: 0 2px 24px rgba(0,0,0,.45); display: grid; gap: 12px; max-width: 640px; opacity: 0; transform: translateY(14px); transition: opacity 1s var(--ease-out) .35s, transform 1s var(--ease-out) .35s; }
 .hero.settled .hero-title { opacity: 1; transform: none; }
 .hero.zoomed .hero-title, .hero.zoomed .film-controls { opacity: 0; transition: opacity .4s; }
 .hero-title h1 { font-size: clamp(36px, 5.4vw, 72px); line-height: .98; font-weight: 400; }
@@ -147,6 +147,7 @@ img { max-width: 100%; }
 .tour.on .iris { opacity: 0; }
 .tour.leaving .iris { opacity: 1; transition: opacity .5s ease; }
 .hud { position: absolute; inset: 0; z-index: 10; pointer-events: none; }
+.tour:not(.on) *, .walk:not(.on) *, .planstage:not(.on) * { pointer-events: none !important; }
 .hud > * { pointer-events: auto; }
 .hud .nav-l { position: absolute; top: calc(18px + env(safe-area-inset-top, 0px)); left: var(--gutter-l); display: flex; gap: 8px; flex-wrap: wrap; }
 .hud .unit-panel { position: absolute; top: calc(18px + env(safe-area-inset-top, 0px)); right: var(--gutter-r); width: min(320px, calc(100vw - 40px)); padding: 14px 16px; border-radius: 10px; background: rgba(16,15,13,.62); border: 1px solid rgba(236,228,212,.14); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); display: grid; gap: 8px; }
@@ -174,6 +175,34 @@ img { max-width: 100%; }
   .unit-panel .u-name { font-size: 19px; white-space: nowrap; } .unit-panel .u-price { font-size: 18px; } .unit-panel .u-meta { font-size: 11px; } .unit-panel .mini { display: none; }
   .hud .hint { display: none; } .hud .roomname { bottom: auto; top: calc(74px + env(safe-area-inset-top, 0px)); }
 }
+
+/* ---------- walk ---------- */
+.walk { position: fixed; inset: 0; z-index: 55; background: #0b0a09; opacity: 0; pointer-events: none; transition: opacity .8s ease; }
+.walk.on { opacity: 1; pointer-events: auto; }
+#walkgl { position: absolute; inset: 0; }
+#walkgl canvas { position: absolute; inset: 0; width: 100% !important; height: 100% !important; display: block; touch-action: none; cursor: crosshair; }
+.walk .grade { background: radial-gradient(120% 95% at 50% 50%, rgba(0,0,0,0) 60%, rgba(8,7,6,.45) 100%); }
+.walk .iris { transition: opacity 1.2s ease .2s; }
+.walk.on .iris { opacity: 0; } .walk.leaving .iris { opacity: 1; transition: opacity .5s ease; }
+.walk .places { position: absolute; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); display: flex; gap: 6px; padding: 6px; border-radius: 999px; background: rgba(16,15,13,.55); border: 1px solid rgba(236,228,212,.14); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); max-width: calc(100vw - 32px); overflow-x: auto; scrollbar-width: none; }
+.walk .places button { height: 36px; padding: 0 14px; border-radius: 999px; border: 1px solid transparent; background: transparent; font: 600 11px/1 var(--body); letter-spacing: .12em; text-transform: uppercase; color: var(--fg-dim); white-space: nowrap; }
+.walk .places button:hover { color: var(--fg); background: rgba(236,228,212,.08); }
+.walk .help { position: absolute; left: var(--gutter-l); bottom: calc(86px + env(safe-area-inset-bottom, 0px)); display: grid; gap: 8px; font: 600 11px/1.5 var(--body); letter-spacing: .14em; text-transform: uppercase; color: var(--fg-dim); transition: opacity .6s; max-width: 320px; }
+.walk .help.fade { opacity: 0; }
+.walk .help b { color: var(--peach); font-weight: 600; }
+.walk .help .touch { display: none; }
+@media (pointer: coarse) { .walk .help .mouse { display: none; } .walk .help .touch { display: block; } }
+.walk .title { position: absolute; top: calc(74px + env(safe-area-inset-top, 0px)); left: var(--gutter-l); font: 400 clamp(26px, 3.6vw, 40px)/1 var(--display); text-shadow: 0 2px 20px rgba(0,0,0,.5); pointer-events: none; }
+.walk .title small { display: block; font: 600 10px/1 var(--body); letter-spacing: .2em; text-transform: uppercase; color: var(--peach); margin-bottom: 8px; }
+.walk .wload { position: absolute; inset: 0; z-index: 9; display: grid; place-items: center; background: #0b0a09; transition: opacity .6s; }
+.walk .wload.done { opacity: 0; pointer-events: none; }
+.walk .wload .track { width: min(240px, 50vw); height: 2px; background: rgba(236,228,212,.14); overflow: hidden; }
+.walk .wload .track i { display: block; height: 100%; background: var(--peach); transform: scaleX(0); transform-origin: left; transition: transform .3s; }
+.walk .wload p { margin-top: 16px; font: 600 10px/1 var(--body); letter-spacing: .2em; text-transform: uppercase; color: var(--fg-dim); text-align: center; }
+.walk .joy { position: absolute; left: calc(28px + env(safe-area-inset-left, 0px)); bottom: calc(96px + env(safe-area-inset-bottom, 0px)); width: 110px; height: 110px; border-radius: 50%; border: 1px dashed rgba(236,228,212,.35); display: none; place-items: center; pointer-events: none; }
+.walk .joy::after { content: ""; width: 38px; height: 38px; border-radius: 50%; background: rgba(241,199,162,.35); border: 1px solid rgba(241,199,162,.7); }
+@media (pointer: coarse) { .walk .joy { display: grid; } .walk .help { bottom: calc(216px + env(safe-area-inset-bottom, 0px)); } }
+.walk .note { position: absolute; top: calc(18px + env(safe-area-inset-top, 0px)); right: var(--gutter-r); max-width: min(300px, calc(100vw - 40px)); padding: 10px 12px; border-radius: 8px; background: rgba(16,15,13,.55); border: 1px solid rgba(236,228,212,.14); font: 500 11px/1.5 var(--body); color: var(--fg-dim); backdrop-filter: blur(10px); }
 
 /* ---------- sections ---------- */
 .section { padding-block: 96px; padding-left: var(--gutter-l); padding-right: var(--gutter-r); }
@@ -275,7 +304,7 @@ footer { padding: 34px var(--gutter-r) calc(34px + env(safe-area-inset-bottom, 0
   <div class="inner">
     <div class="head">
       <div><h2 id="planTitle">Floor <em>2</em></h2><p class="sub">Three apartments around the stair and lift core. Hover an apartment on the plan or in the list, then open its tour.</p></div>
-      <div class="floorpick" id="floorpick" role="tablist" aria-label="Floor"></div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center"><div class="floorpick" id="floorpick" role="tablist" aria-label="Floor"></div><button class="chip" id="planWalkBtn"><span>Walk the floor</span></button></div>
     </div>
     <div class="planbox"><div id="planFull"></div><div class="legend" id="planLegend"></div></div>
     <div class="aptcards" id="aptcards"></div>
@@ -294,11 +323,34 @@ footer { padding: 34px var(--gutter-r) calc(34px + env(safe-area-inset-bottom, 0
     <div class="nav-l">
       <button class="chip" id="toPlanBtn"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg><span>Floor plan</span></button>
       <button class="chip" id="toBuildingBtn"><span>Building</span></button>
+      <button class="chip" id="toWalkBtn"><svg viewBox="0 0 24 24"><path d="M13 4a2 2 0 1 0 0 .01M9 20l2-6 3 2v4M9 11l2-3 3 1 2 3M7 14l2-3"/></svg><span>Walk the floor</span></button>
     </div>
     <div class="unit-panel" id="unitPanel"></div>
     <div class="roomname" id="roomName"></div>
     <div class="hint" id="hint"><svg viewBox="0 0 24 24"><path d="M4 12h16M4 12l4-4M4 12l4 4M20 12l-4-4M20 12l-4 4"/></svg>Drag to look around</div>
     <div class="rooms" id="rooms" role="tablist" aria-label="Rooms"></div>
+  </div>
+</div>
+
+<!-- free walk -->
+<div class="walk" id="walk" aria-hidden="true">
+  <div id="walkgl"></div>
+  <div class="grade"></div><div class="grain"></div>
+  <div class="iris"></div>
+  <div class="wload" id="wload"><div><div class="track"><i id="wbar"></i></div><p>Loading the floor</p></div></div>
+  <div class="hud">
+    <div class="nav-l">
+      <button class="chip" id="walkBack"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg><span>Back</span></button>
+      <button class="chip" id="walkRooms"><span>360° rooms</span></button>
+    </div>
+    <div class="note">Free walk through the furnished floor model. This model shows a four-apartment layout; the final version will follow the A · B · C plan.</div>
+    <div class="title"><small>Free walk</small>The floor</div>
+    <div class="help" id="walkHelp">
+      <span class="mouse"><b>W A S D</b> or arrows to walk · drag to look · <b>tap the floor</b> to walk there · shift to hurry</span>
+      <span class="touch"><b>Left thumb</b> to walk · <b>right thumb</b> to look · tap the floor to walk there</span>
+    </div>
+    <div class="joy"></div>
+    <div class="places" id="places"></div>
   </div>
 </div>
 
@@ -310,6 +362,7 @@ footer { padding: 34px var(--gutter-r) calc(34px + env(safe-area-inset-bottom, 0
       <p>Apartment A faces south and east from the lower corner, B takes the north-west with the deepest balcony, and C runs the length of the east side with a séjour that opens to the dusk. The cut-away plans below are rendered from the architect's drawings.</p>
       <p class="note"><b>Example listings.</b> Prices and availability below are placeholders until the final schedule is confirmed. Areas are measured from the plans.</p>
     </div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:28px"><button class="btn" id="resWalkBtn"><svg viewBox="0 0 24 24"><path d="M13 4a2 2 0 1 0 0 .01M9 20l2-6 3 2v4M9 11l2-3 3 1 2 3M7 14l2-3"/></svg>Walk the floor in 3D</button></div>
     <div class="types" id="types"></div>
     <div class="avail" id="avail"></div>
   </div>
@@ -538,7 +591,54 @@ function leaveTour(toPlan) {
 }
 document.getElementById('toPlanBtn').addEventListener('click', () => leaveTour(true));
 document.getElementById('toBuildingBtn').addEventListener('click', () => leaveTour(false));
-addEventListener('keydown', e => { if (e.key !== 'Escape') return; if (currentUnit) leaveTour(true); else if (planstage.classList.contains('on')) closeAll(); });
+addEventListener('keydown', e => { if (e.key !== 'Escape') return; if (walkEl.classList.contains('on')) { leaveWalk(false); return; } if (currentUnit) leaveTour(true); else if (planstage.classList.contains('on')) closeAll(); });
+
+/* ---------------- free walk ---------------- */
+const walkEl = document.getElementById('walk');
+let walkMod = null, walkPromise = null, walker = null, walkFrom = null;
+const PLACES = [
+  { id: 'sejour', label: 'Séjour north', x: 1.8, z: -3.3, yaw: Math.PI },
+  { id: 'living-w', label: 'Living west', x: -7.3, z: -0.9, yaw: -Math.PI / 2 },
+  { id: 'living-e', label: 'Living east', x: 7.3, z: -0.9, yaw: Math.PI / 2 },
+  { id: 'bed-sw', label: 'Bedroom south-west', x: -3.1, z: 7.3, yaw: 0 },
+  { id: 'bed-se', label: 'Bedroom south-east', x: 3.1, z: 7.3, yaw: 0 },
+  { id: 'balcony-w', label: 'Balcony west', x: -8.2, z: -4.7, yaw: -Math.PI / 2 },
+];
+function loadWalk() { if (!walkPromise) walkPromise = import('./walk.js').then(m => (walkMod = m)).catch(err => { console.error(err); return null; }); return walkPromise; }
+async function enterWalk(from) {
+  walkFrom = from; walkEl.classList.add('on'); walkEl.setAttribute('aria-hidden', 'false'); document.body.classList.add('locked'); bar.classList.add('hidden-ui');
+  hero.scrollIntoView({ block: 'start' });
+  if (from === 'tour') { tour.classList.remove('on'); if (viewer) viewer.stop(); }
+  if (from === 'plan') planstage.classList.remove('on');
+  const wload = document.getElementById('wload'), wbar = document.getElementById('wbar');
+  if (!walker) {
+    wload.classList.remove('done');
+    const mod = await loadWalk();
+    if (!mod) { wload.querySelector('p').textContent = 'The 3D floor could not be loaded in this browser.'; return; }
+    try { walker = await mod.createWalk(document.getElementById('walkgl'), { onProgress: f => { wbar.style.transform = `scaleX(${f})`; }, onInteract: () => document.getElementById('walkHelp').classList.add('fade') }); }
+    catch (err) { console.error(err); wload.querySelector('p').textContent = 'The 3D floor could not be loaded in this browser.'; return; }
+    const box = document.getElementById('places');
+    for (const pl of PLACES) { const b = document.createElement('button'); b.textContent = pl.label; b.addEventListener('click', () => { walker.teleport(pl.x, pl.z, pl.yaw, -0.04); document.getElementById('walkHelp').classList.add('fade'); }); box.appendChild(b); }
+    walker.teleport(PLACES[0].x, PLACES[0].z, PLACES[0].yaw, -0.04);
+  }
+  walker.resize(); walker.start();
+  setTimeout(() => wload.classList.add('done'), 300);
+}
+function leaveWalk(toRooms) {
+  walkEl.classList.add('leaving');
+  setTimeout(() => {
+    walkEl.classList.remove('on', 'leaving'); walkEl.setAttribute('aria-hidden', 'true'); if (walker) walker.stop();
+    if (toRooms && currentUnit) { tour.classList.add('on'); if (viewer) viewer.start(); return; }
+    if (walkFrom === 'tour' && currentUnit) { tour.classList.add('on'); if (viewer) viewer.start(); }
+    else if (walkFrom === 'plan') { planstage.classList.add('on'); }
+    else closeAll();
+  }, 500);
+}
+document.getElementById('toWalkBtn').addEventListener('click', () => enterWalk('tour'));
+document.getElementById('planWalkBtn').addEventListener('click', () => enterWalk('plan'));
+document.getElementById('resWalkBtn').addEventListener('click', () => { settle(); hero.classList.add('zoomed'); frame.style.filter = 'blur(5px) brightness(.5) saturate(.85)'; enterWalk('page'); });
+document.getElementById('walkBack').addEventListener('click', () => leaveWalk(false));
+document.getElementById('walkRooms').addEventListener('click', () => { if (currentUnit) leaveWalk(true); else { leaveWalk(false); } });
 
 /* ---------------- sections ---------------- */
 const types = document.getElementById('types');
