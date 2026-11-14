@@ -1,0 +1,12 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><style>html,body{margin:0;height:100%;background:#000}canvas{display:block}</style>
+<script type="importmap">{"imports":{"three":"./vendor/three/build/three.module.js"}}</script></head><body>
+<script type="module">
+import * as THREE from 'three';
+const r = new THREE.WebGLRenderer({antialias:true}); r.setSize(innerWidth, innerHeight); r.outputColorSpace = THREE.SRGBColorSpace; document.body.appendChild(r.domElement);
+const s = new THREE.Scene(); const cam = new THREE.PerspectiveCamera(75, innerWidth/innerHeight, .1, 100);
+const tex = new THREE.TextureLoader().load('pano_test.jpg', () => { tex.colorSpace = THREE.SRGBColorSpace; window.ready = true; });
+const g = new THREE.SphereGeometry(10, 64, 32); g.scale(-1, 1, 1);
+s.add(new THREE.Mesh(g, new THREE.MeshBasicMaterial({map: tex})));
+window.look = (yawDeg, pitchDeg=0) => { const y = yawDeg*Math.PI/180, p = pitchDeg*Math.PI/180; cam.lookAt(Math.sin(y)*Math.cos(p), Math.sin(p), Math.cos(y)*Math.cos(p)); r.render(s, cam); };
+window.look(0);
+</script></body></html>
